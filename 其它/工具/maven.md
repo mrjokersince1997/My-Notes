@@ -350,7 +350,7 @@ Maven 采用 XML 配置文件来注明项目所需要的第三方文件和路径
                     <executions>
                         <execution>
                             <goals>
-                                <goal>repackage</goal>
+                                <goal>repackage</goal> 
                             </goals>
                         </execution>
                     </executions>
