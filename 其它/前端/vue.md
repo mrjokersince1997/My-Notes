@@ -101,7 +101,8 @@ vue 对象是管理 vue 的基本单元，开发者可以在 JS 代码中创建 
 
 ### 方法调用
 
-在 vue 对象中，通过 `methods` 定义 vue 对象中的方法。
+- 在 vue 对象中，通过 `methods` 定义 vue 对象中的方法。
+- 在 vue 对象中，通过 `computed` 定义计算属性，重复调用时会基于缓存直接返回之前的计算结果，提高效率。
 
 ```html
 <!-- 方法调用 -->
@@ -124,12 +125,19 @@ vue 对象是管理 vue 的基本单元，开发者可以在 JS 代码中创建 
           this.message = message
           console.log(message)
         }
-      });
+      },
+      // 计算属性
+      computed: {
+      calc (data) {
+        return this.num + data
+      }
+    });
 </script>
 ```
 
-- 在 vue 对象中，通过 `computed` 定义计算属性，重复调用时会基于缓存直接返回之前的计算结果，提高效率。
-- 在 vue 对象中，通过 `created` 定义方法，会在创建 vue 对象时自动调用。
+
+- 在 vue 对象中，通过 `created` 定义方法，会在创建 vue 对象时自动调用。在模板渲染成html前调用，即通常初始化某些属性值，然后再渲染成视图。
+- 在 vue 对象中，通过 `mounted` 定义方法，会在创建 vue 对象时自动调用。在模板渲染成html后调用，通常是初始化页面完成后，再对html的dom节点进行一些需要的操作。
 
 ```html
 <!-- 计算结果 -->    
@@ -147,11 +155,7 @@ vue 对象是管理 vue 的基本单元，开发者可以在 JS 代码中创建 
       this.num = 100
     },
     // 计算属性
-    computed: {
-      calc (data) {
-        return this.num + data
-      }
-    }
+    
   });
 </script>
 ```
@@ -726,10 +730,10 @@ axios.post('/post',{
 
 **对于返回响应结果 ret** 
 
-- ret.data : 响应返回数据，可读取返回数据中某一具体属性。
-- ret.headers : 响应头信息
-- ret.status : 响应状态码
-- ret.statusText : 响应状态信息
+- `ret.data` : 响应返回数据，可读取返回数据中某一具体属性。
+- `ret.headers` : 响应头信息
+- `ret.status` : 响应状态码
+- `ret.statusText` : 响应状态信息
 
 #### 异步请求
 
@@ -751,7 +755,7 @@ axios.post('/post',{
 ```
 
 
-表单提交自带校验方法 validate(callback){ 直接返回 Promise 对象}，默认 valid 为 true 通过。一旦错误直接
+表单提交自带校验方法 `validate(callback)`{ 直接返回 Promise 对象}，默认 valid 为 true 通过。
 
 ```js
 // 对于 ID 为 addFormRef 的表单
@@ -934,61 +938,61 @@ const User = {
 
 ### 路由语句执行
 
-#### $route 查询路由信息
+#### 查询路由信息
 
-在 vue 组件中，可以通过 $route 查询当前路由的详细信息。在组件内，即 this.$route 。
+在 vue 组件中，可以通过 `$route` 查询当前路由的详细信息。在组件内，即 this.$route 。
 
 对于路由 /list/type/11?favorite=yes 
 
+```js
 {
   path:'/list/type/:id',
   name:'user',  // 路由命名
   component: User, 
   props:true
 }
+```    
     
-    
-$route.path  （字符串）返回绝对路径  $route.path='/list/type/11'
-
-$route.params （对象）动态路径键值对   $route.params.id == 11 
-
-$route.query  （对象）查询参数键值对  $route.query.favorite == 'yes' 
-
-$route.name   （对象）路径名，没有则为空。 $route.name == 'user'
-
-$route.router    路由规则所属的路由器（以及其所属的组件）。
-$route.matched    数组，包含当前匹配的路径中所包含的所有片段所对应的配置参数对象。
+- `$route.path`  （字符串）返回绝对路径  $route.path='/list/type/11'
+- `$route.params` （对象）动态路径键值对   $route.params.id == 11 
+- `$route.query`  （对象）查询参数键值对  $route.query.favorite == 'yes' 
+- `$route.name`   （对象）路径名，没有则为空。 $route.name == 'user'
+- `$route.router`    路由规则所属的路由器（以及其所属的组件）。
+- `$route.matched`    数组，包含当前匹配的路径中所包含的所有片段所对应的配置参数对象。
 
 
 
-#### $router 执行路由跳转
+#### 执行路由跳转
 
-在 vue 组件中，可以通过调用全局路由对象 $router 查的方法实现页面跳转。
+在 vue 组件中，可以通过调用全局路由对象 `$router` 查的方法实现页面跳转。
 
 push 方法和 <router-link :to="..."> 等同，执行时跳转指定页面。
 
+```js
 this.$router.push('home')                                                /home
 this.$router.push({ path: 'home' })                                      /home
 this.$router.push({ path: 'home', query: { plan: '123' }})               /home?plan=123（附带查询参数）
 this.$router.push({ name: 'user', params: { id: 123 }})                  /list/type/123（根据命名跳转可以附带动态路径）
-
+```
 
 
 go 方法根据历史记录，跳转上一个或下一个页面。
 
+```js
 this.$router.go(-1)                  返回之前的页面
+```
 
 replace 方法替换当前的页面，和 push 方法的不同在于不会历史记录（一般用于 404 页面）。
 
+```js
 this.$router.replace('/')
-
+```
 
 
 ---
 
 
-
-### vue 项目结构
+## vue 项目结构
 
 vue 项目由上述两种方式自动创建，其项目结构如下：
 
@@ -1015,30 +1019,39 @@ vue 项目由上述两种方式自动创建，其项目结构如下：
 还有一些其他配置文件，比如项目配置文件 package.json。
 用户可以创建 vue.config.js 对 vue 进行自定义配置，默认覆盖原配置。
 
-### vue 常用插件
+## vue 常用插件
 
 
 ### 组件库
 
-不用自己画组件，可以使网站快速成型。推荐直接在 图形化工具内导入
+不用自己画组件，可以使网站快速成型。推荐直接在图形化工具内导入。
 
-官网：https://element.eleme.cn/#/zh-CN/component/installation
-
-导入element-ui等桌面组件库，bootstrap 等移动端组件库
-
-安装依赖包 npm install element-ui -S
-
-导入资源即可
-
-import ElementUI from 'element-ui'; 
-import 'element-ui/lib/theme-chalk/index.css'// 样式
-
-Vue.use(ElementUI);
+导入 element-ui 等桌面组件库，bootstrap 等移动端组件库。
 
 
 ### Element UI 组件库
 
-$ 符 用来绑定事件
+官网：https://element.eleme.cn/#/zh-CN/component/installation
+
+
+1. 安装依赖包 
+
+```js
+npm install element-ui -S
+```
+
+2. `main.js` 导入资源
+
+```js
+import ElementUI from 'element-ui'; 
+import 'element-ui/lib/theme-chalk/index.css'
+
+Vue.use(ElementUI);
+```
+
+
+
+`$` 符用来绑定事件。
 
 this.$refs.tree.getCheckedKeys());  
 
