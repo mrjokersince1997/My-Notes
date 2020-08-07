@@ -177,9 +177,11 @@ git branch test                            # 创建 test 分支（但不切换�
 git checkout test                          # 切换到 test 分支
 git checkout -b test                       # 创建并切换到 test 分支
 
-git merge test                             # test 分支合并到主分支
-git merge origin/master                    # origin/master 合并到主分支   
-git rebase master                          # master 分支合并到当前分支
+
+# 当前分支未被修改时，merge 和 rebase 无区别
+git merge test                             # test 分支合并到当前分支（将两个分支合并，新建一个 commit）
+git merge origin/master                    # origin/master 合并到当前分支   
+git rebase master                          # master 分支合并到当前分支（当前分支重新执行另一个分支的全部 commit）
 
 git branch -D test                         # 删除分支
 ```
