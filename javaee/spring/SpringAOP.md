@@ -243,9 +243,38 @@ public class ControllerExceptionHandler {
 
 ### 拦截器
 
-拦截器是典型的 AOP 思想应用。在执行 Controller 方法前后对 Controller 请求进行拦截和处理。实现 HandlerInterceptor 接口或者继承 HandlerInterceptorAdapter 类。
+- **拦截器(Interceptor)**
 
-拦截器一般通过核对 session 实现校验， HttpSession 对象可以通过 HttpServletRequest 对象获取，也可以直接在方法参数中获取。
+Java Web 中，在执行 Controller 方法前后对 Controller 请求进行拦截和处理。依赖于 web 框架，在 Spring 配置。在实现上基于 Java 的反射机制。
+
+- **过滤器(Filter)**
+
+Java Web 中，在 request/response 传入 Servlet 前，过滤信息或设置参数。依赖于 servlet 容器，在 web.xml 配置。在实现上基于函数回调。
+
+> 两者常用于修改字符编码、删除无用参数、登录校验等。Spring 框架中优先使用拦截器：功能接近、使用更加灵活。
+
+
+拦截器配置
+
+```java
+// 在配置中引入拦截器对象（单独编写拦截器类）
+
+@Override
+public void addInterceptors(InterceptorRegistry registry) {
+    // 导入拦截器对象，默认拦截全部
+    InterceptorRegistration addInterceptor = registry.addInterceptor(new myInterceptor());
+
+    // 排除配置
+    addInterceptor.excludePathPatterns("/error","/login","/user/login");               
+    addInterceptor.excludePathPatterns("/asserts/**");                       
+    addInterceptor.excludePathPatterns("/webjars/**");
+    addInterceptor.excludePathPatterns("/public/**");
+    // 拦截配置
+    addInterceptor.addPathPatterns("/**");
+}
+```
+
+拦截器类通过实现 HandlerInterceptor 接口或者继承 HandlerInterceptorAdapter 类。
 
 ```java
 // 定义拦截器
@@ -275,6 +304,40 @@ public class myInterceptor extends HandlerInterceptorAdapter {
 
 }
 ```
+
+过滤器类通过继承 Filter 类实现，直接添加注解即可。
+
+```java
+@Component                                                                // 作为组件，交给容器处理
+@ServletComponentScan                                                     // 扫描组件
+@WebFilter(urlPatterns = "/login/*",filterName = "loginFilter")           // 设定过滤路径和名称
+@Order(1)                                                                 // 设定优先级（值小会优先执行）
+public class LoginFilter implements Filter{
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+    }
+
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        // 过滤器前执行
+        System.out.println("before");
+        // 执行内部逻辑
+        filterChain.doFilter(servletRequest,servletResponse);
+        // 过滤器后执行
+        System.out.println("after");
+    }
+
+    @Override
+    public void destroy() {
+    }
+}
+```
+
+
+**调用顺序**
+
+![filter](filter.png)
 
 
 

@@ -410,3 +410,48 @@ Maven 采用 XML 配置文件来注明项目所需要的第三方文件和路径
 在 IDEA 界面右侧 MAVEN 选项，可将当前 MAVEN 项目模块发布到本地。 
 
 名称和版本号为 pom.xml 中配置。
+
+
+
+## maven插件：exec-maven-plugin
+
+在执行 maven 命令时，我们可能还需要插入 Java 语句或者打包 npm 等，使用exec-maven-plugin 插件可插入。
+
+
+```xml
+<plugin>
+    <groupId>org.codehaus.mojo</groupId>
+    <artifactId>exec-maven-plugin</artifactId>
+    <version>${exec.maven.plugin.version}</version>
+    <executions>
+        <execution>
+            <id>npm install</id>    <!-- 要执行的命令 -->
+            <goals>
+                <goal>exec</goal>   <!-- Java 还是 exec -->
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+                <executable>npm</executable>
+                <arguments>
+                    <argument>install</argument>
+                    <argument>--verbose</argument>
+                </arguments>
+            </configuration>
+        </execution>
+        <execution>
+            <id>npm run build</id>
+            <goals>
+                <goal>exec</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+                <executable>npm</executable>
+                <arguments>
+                    <argument>run</argument>
+                    <argument>build</argument>
+                </arguments>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+```

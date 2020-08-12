@@ -116,16 +116,16 @@ public String test(User user){
 }
 ```
 
-4. 通过 RequestParam 注解来获取参数（实参值赋给形参）
+4. 通过 RequestParam 注解来获取参数，实参值赋给形参。
 
 ```java
 @RequestMapping("/test")
-public String test(@RequestParam("username") String s1, @RequestParam("password") String s2){
+public String test(@RequestParam(value="username",required = false, defaultValue ="mrjoker") String s1, @RequestParam("password") String s2){
     return s1 + s2;
 }
 ```
 
-5. 通过 PathVariable 注解来动态获取参数，对于请求 /test/mrjoker/123456
+5. 通过 PathVariable 注解来动态获取参数，参数直接附着在 URL 中。
 
 ```java
 @RequestMapping("/test/{username}/{password}")
@@ -134,8 +134,22 @@ public String test(@PathVariable("username") String s1, @PathVariable("password"
 }
 ```
 
-6. 通过 ModelAttribute 注解来获取其他方法返回值作为参数
+6. 通过 ModelAttribute 注解来获取其他方法返回值作为参数，被注释方法会在此 controller 中每个方法执行前被执行。
 
+```java
+@Controller 
+public class HelloWorldController { 
+    @ModelAttribute 
+    public void populateModel(@RequestParam String abc, Model model) { 
+        model.addAttribute("attributeName", abc); 
+    } 
+ 
+    @RequestMapping(value = "/helloWorld") 
+    public String helloWorld() { 
+       return "helloWorld"; 
+    } 
+}
+```
 
 ### POST 请求参数
 

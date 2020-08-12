@@ -59,6 +59,7 @@ div { letter-spacing:0.5em; }               /* 简单选择器 */
 - `position:absolute;` 设置元素为绝对定位
 - `position:fixed;` 设置元素为固定定位
 
+
 ---
 
 ## 元素框
@@ -77,6 +78,8 @@ div { letter-spacing:0.5em; }               /* 简单选择器 */
 
 ## 元素放置
 
+### 元素类型
+
 1. **块级元素**
    
   独占一行，可任意规定宽高和内外边距大小。
@@ -92,6 +95,61 @@ div { letter-spacing:0.5em; }               /* 简单选择器 */
 - `display:none` 不摆放该元素
 
 
+### 元素居中
+
+在父级父容器中让行内元素居中对齐：
+
+1. **水平居中**
+
+对于块状元素，只需要规定 `margin: 0 auto` ;
+
+对于内联元素（如文本和链接），只需要在块级父容器中添加 `text-align: center` 。
+
+2. **垂直居中**
+
+对于已知高度的块状元素，通过
+
+```css
+.parent { position: relative; } 
+
+.child { 
+  position: absolute; 
+  top: 50%; 
+  height: 100px; 
+  margin-top: -50px; 
+}
+```
+
+对于未知高度的块状元素，通过
+
+```css
+.parent { position: relative; } 
+
+.child { 
+  position: absolute; 
+  top: 50%; 
+  transform: translateY(-50%); 
+}
+```
+
+
+对于内联元素，只需为它们添加等值的 padding-top 和 padding-bottom 就可以实现垂直居中。
+
+
+
+特殊技巧：放在页面中央。
+
+```css
+.element {
+  left:50%;
+  top:50%;
+  transform: translate(-50%,-50%);
+}
+```
+
+
+### 元素隐藏
+
 *隐藏元素共有三种方式，效果不同：*
 
 - `display:none` 元素不摆放，等同于没有
@@ -102,8 +160,26 @@ div { letter-spacing:0.5em; }               /* 简单选择器 */
 
 ## 文本样式
 
+
+### 文本间距
+
 `letter-spacing:0.5em;` 字符间距
 `word-spacing:0.5em;` 单词间距（只对英文起作用）
+
+
+### 文本溢出
+
+`overflow-x:hidden;`  水平方向：文本超出内容框后隐藏
+`overflow-y:auto;`  垂直方向：视情况提供滚动条
+
+参数|含义
+-|-
+visible | 文本超出后会显示在内容框之外。
+hidden|  文本超出部分被裁剪。
+scroll| 提供滚动条。	
+auto| 文本超出后提供滚动条。
+no-display| 如果内容不适合内容框，则删除整个框。
+no-content| 如果内容不适合内容框，则隐藏整个内容。
 
 
 ---
@@ -142,10 +218,4 @@ td：对 table 的指定列采取不同样式
 `tr td:nth-child(-n+3){ text-align:center; }`    //第3列以前的全部元素
 `tr td:nth-child(n+4){ text-align:center; }`    //第4列以后的全部元素
 
-### 特殊技巧
 
-放在页面中央
-
-  left:50%;
-  top:50%;
-  transform: translate(-50%,-50%);

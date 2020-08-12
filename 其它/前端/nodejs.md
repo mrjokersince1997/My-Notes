@@ -212,6 +212,15 @@ npm install vue/cli -g            # 全局安装 Node.js 模块
 npm uninstall vue/cli -g          # 全局卸载 Node.js 模块
 ```
 
+修改和查看 npm 下载地址。
+
+```bash
+npm --registry https://registry.npm.taobao.org install express   # 临时使用
+
+npm config set registry https://registry.npm.taobao.org
+npm config get registry 
+```
+
 - **开发环境**
 
 npm 下载模块时默认为通用模块，可以在全部开发环境下使用。但我们在开发时可能需要引入部分模块，完成后不在生产环境引用。
