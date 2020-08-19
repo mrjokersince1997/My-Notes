@@ -37,7 +37,7 @@ Libraries 库里的第三方文件都是以 jar 文件形式保存，Java 程序
 2. **XML 配置文件位置**
 3. **Libraries 库位置**
 
-![mavenidea](mavenidea.PNG)
+![mavenidea](mavenset.png)
 
 ### XML 文件
 
@@ -412,11 +412,20 @@ Maven 采用 XML 配置文件来注明项目所需要的第三方文件和路径
 名称和版本号为 pom.xml 中配置。
 
 
+validate 验证项目是否正确以及必须的信息是否可用
+compile 编译源代码
+test 测试编译后的代码，即执行单元测试代码
+package 打包编译后的代码，在target目录下生成package文件
+integration-test 处理package以便需要时可以部署到集成测试环境
+verify 检验package是否有效并且达到质量标准
+install 安装package到本地仓库，方便本地其它项目使用
+deploy 部署，拷贝最终的package到远程仓库和替他开发这或项目共享，在集成或发布环境完成
+
+
 
 ## maven插件：exec-maven-plugin
 
 在执行 maven 命令时，我们可能还需要插入 Java 语句或者打包 npm 等，使用exec-maven-plugin 插件可插入。
-
 
 ```xml
 <plugin>
@@ -425,11 +434,12 @@ Maven 采用 XML 配置文件来注明项目所需要的第三方文件和路径
     <version>${exec.maven.plugin.version}</version>
     <executions>
         <execution>
-            <id>npm install</id>    <!-- 要执行的命令 -->
+            <id>npm install</id>    <!-- 指令标识 -->
             <goals>
                 <goal>exec</goal>   <!-- Java 还是 exec -->
             </goals>
             <phase>generate-resources</phase>
+            <!-- 要执行的命令 -->
             <configuration>
                 <executable>npm</executable>
                 <arguments>

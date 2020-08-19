@@ -153,13 +153,18 @@ git status                                 # 查看文件是否被暂存或提�
 
 执行 commit 操作后（版本号 A）并尝试 push 到远程仓库，如果远程仓库已经被更新就会遭到拒绝。此时必须通过 pull 获取更新到本地然后合并（版本号 B）才能 push 代码，但是会提交两个版本更新。
 
-此时可以改用 stash 操作对本地更改进行缓存，但不会产生新的提交对象。再执行 pull 操作时会直接读取远程仓库的版本，然后通过 stash pop 操作读取缓存并合并（版本号 B）。之后再进行 commit 和 push 操作，就只会提交一个版本更新。
+此时可以改用 stash 操作对本地更改进行缓存，但不会产生新的提交对象（无论是否 add 默认情况下都会被缓存）。再执行 pull 操作时会直接读取远程仓库的版本，然后通过 stash pop 操作读取缓存并合并（版本号 B）。之后再进行 commit 和 push 操作，就只会提交一个版本更新。
 
 ```bash
 git stash                                  # 将更改放入堆栈缓存
+git stash save "save message"              # 将更改放入堆栈缓存并命名
+  
+git stash apply                            # 应用堆栈缓存中的更改但不清除
 git stash pop                              # 读取堆栈缓存中的更改
 
 git stash list                             # 查看堆栈缓存
+git stash show "save message"              # 查看指定堆栈缓存
+git stash clear                            # 清空堆栈缓存
 ```
 
 

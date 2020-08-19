@@ -25,6 +25,8 @@ Hadoop实现了一个分布式文件系统（Hadoop Distributed File System）�
 
 ### 基本概念
 
+![](hadoop.png)
+
 - **Block 数据块**
 
 基本存储和读写单位，一般大小为 64M（不同文件的块大小可以不一致）。大文件会被拆分成一个个的块，然后存储于不同的机器。
