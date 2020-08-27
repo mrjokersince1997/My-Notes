@@ -49,49 +49,34 @@ Maven 采用 XML 配置文件来注明项目所需要的第三方文件和路径
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    
+    <!-- 父项目坐标 -->
     <parent>
         <artifactId>stream-platform</artifactId>
         <groupId>com.company.stream</groupId>
         <version>1.1.1-SNAPSHOT</version>
     </parent>
 
+    <!--项目标识符（生成路径）和 构件标识符 -->
     <groupId>com.company.stream</groupId>
     <artifactId>stream-platform-server</artifactId>
 
+    <!-- 配置：可在其它位置导入。 -->
     <properties>
         <datatables.version>1.10.16</datatables.version>
         <font-awesome.version>4.7.0</font-awesome.version>
         <bootstrap.version>3.3.7</bootstrap.version>
         <jquery.version>3.2.1</jquery.version>
         <locator.version>0.32</locator.version>
-
         <mysql-connector.version>6.0.6</mysql-connector.version>
         <mysql.version>8.0.13</mysql.version>
         <c3p0.version>0.9.5.2</c3p0.version>
-
         <mybatis.version>1.3.1</mybatis.version>
         <lombok.version>1.16.20</lombok.version>
-
-        <hystrix.version>1.5.12</hystrix.version>
-        <hibernate-validator.version>6.0.9.Final</hibernate-validator.version>
-        <javax-validation.version>2.0.0.Final</javax-validation.version>
-        <company.jigsaw.version>2.1.2</company.jigsaw.version>
-        <company.config.client.version>3.13.0</company.config.client.version>
-
-        <generator.version>1.3.5</generator.version>
-        <tinypinyin.version>2.0.3</tinypinyin.version>
-        <jsqlparser.version>0.9.5</jsqlparser.version>
-        <modelmapper.version>1.1.0</modelmapper.version>
-
-        <javax.mail.version>1.4.7</javax.mail.version>
-
-        <swagger.version>2.2.2</swagger.version>
-        <zkclient.version>0.10</zkclient.version>
-        <jedis.version>2.8.1</jedis.version>
-
         <spring.boot.version>2.1.6.RELEASE</spring.boot.version>
     </properties>
 
+    <!-- 资源仓库：依赖下载地址。 -->
     <repositories>
         <repository>
             <id>libs-release</id>
@@ -116,6 +101,7 @@ Maven 采用 XML 配置文件来注明项目所需要的第三方文件和路径
         </repository>
     </repositories>
 
+    <!-- 依赖管理：规定依赖的版本、类型等信息，但不会下载依赖。 -->
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -126,46 +112,6 @@ Maven 采用 XML 配置文件来注明项目所需要的第三方文件和路径
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>redis.clients</groupId>
-                <artifactId>jedis</artifactId>
-                <version>${jedis.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mybatis.spring.boot</groupId>
-                <artifactId>mybatis-spring-boot-starter</artifactId>
-                <version>${mybatis.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.netflix.hystrix</groupId>
-                <artifactId>hystrix-core</artifactId>
-                <version>${hystrix.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.mchange</groupId>
-                <artifactId>c3p0</artifactId>
-                <version>${c3p0.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.webjars</groupId>
-                <artifactId>font-awesome</artifactId>
-                <version>${font-awesome.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.webjars</groupId>
-                <artifactId>bootstrap</artifactId>
-                <version>${bootstrap.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.webjars</groupId>
-                <artifactId>jquery</artifactId>
-                <version>${jquery.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.webjars</groupId>
-                <artifactId>webjars-locator</artifactId>
-                <version>${locator.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.webjars</groupId>
                 <artifactId>datatables</artifactId>
                 <version>${datatables.version}</version>
@@ -174,16 +120,6 @@ Maven 采用 XML 配置文件来注明项目所需要的第三方文件和路径
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${mysql-connector.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>${lombok.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.promeg</groupId>
-                <artifactId>tinypinyin</artifactId>
-                <version>${tinypinyin.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.promeg</groupId>
@@ -201,24 +137,10 @@ Maven 采用 XML 配置文件来注明项目所需要的第三方文件和路径
                     </exclusion>
                 </exclusions>
             </dependency>
-            <dependency>
-                <groupId>javax.mail</groupId>
-                <artifactId>mail</artifactId>
-                <version>${javax.mail.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.dataformat</groupId>
-                <artifactId>jackson-dataformat-yaml</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.modelmapper</groupId>
-                <artifactId>modelmapper</artifactId>
-                <version>${modelmapper.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
+    <!-- 依赖：Maven 将从仓库自动下载以下依赖。 -->
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -244,102 +166,9 @@ Maven 采用 XML 配置文件来注明项目所需要的第三方文件和路径
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mybatis.spring.boot</groupId>
-            <artifactId>mybatis-spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.restdocs</groupId>
-            <artifactId>spring-restdocs-mockmvc</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.session</groupId>
-            <artifactId>spring-session-data-redis</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-yaml</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.modelmapper</groupId>
-            <artifactId>modelmapper</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.mchange</groupId>
-            <artifactId>c3p0</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <version>1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-library</artifactId>
-            <version>2.11.7</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.101tec</groupId>
-            <artifactId>zkclient</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.company.config</groupId>
-            <artifactId>config-client</artifactId>
-        </dependency>
     </dependencies>
 
+    <!-- 插件 -->
     <build>
         <pluginManagement>
             <plugins>
@@ -387,18 +216,6 @@ Maven 采用 XML 配置文件来注明项目所需要的第三方文件和路径
                 <groupId>org.mybatis.generator</groupId>
                 <artifactId>mybatis-generator-maven-plugin</artifactId>
             </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
         </plugins>
     </build>
 
@@ -412,14 +229,14 @@ Maven 采用 XML 配置文件来注明项目所需要的第三方文件和路径
 名称和版本号为 pom.xml 中配置。
 
 
-validate 验证项目是否正确以及必须的信息是否可用
-compile 编译源代码
-test 测试编译后的代码，即执行单元测试代码
-package 打包编译后的代码，在target目录下生成package文件
-integration-test 处理package以便需要时可以部署到集成测试环境
-verify 检验package是否有效并且达到质量标准
-install 安装package到本地仓库，方便本地其它项目使用
-deploy 部署，拷贝最终的package到远程仓库和替他开发这或项目共享，在集成或发布环境完成
+- `validate` 验证项目是否正确以及必须的信息是否可用
+- `compile` 编译源代码
+- `test` 测试编译后的代码，即执行单元测试代码
+- `package` 打包编译后的代码，在target目录下生成package文件(jar)
+- `integration-test` 处理package以便需要时可以部署到集成测试环境
+- `verify` 检验package是否有效并且达到质量标准
+- `install` 安装package到本地仓库，方便本地其它项目使用
+- `deploy` 部署，拷贝最终的package到远程仓库和替他开发这或项目共享，在集成或发布环境完成
 
 
 

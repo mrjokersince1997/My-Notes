@@ -74,6 +74,8 @@ div { letter-spacing:0.5em; }               /* 简单选择器 */
 
 - `margin-top:30px;`
 
+- `border:`
+
 ---
 
 ## 元素放置

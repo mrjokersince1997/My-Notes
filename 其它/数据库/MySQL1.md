@@ -312,7 +312,7 @@ DECIMAL(M,D)|M + 2 | | BigDecimal
 
 ### 日期类型
 
-java.sql 包内有专用 Java 类型匹配，注意数据类型必须是 java.sql.Date，而不是 java.util.Date 。
+java.sql 包内有专用 Java 类型匹配，注意数据类型必须是 `java.sql.Date`，而不是 `java.util.Date` 。
 
 类型|大小（字节）|格式|表示范围|JAVA 类型
 -|-|-|-|-	
