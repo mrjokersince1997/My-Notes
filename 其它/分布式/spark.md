@@ -3,18 +3,41 @@
 
 ---
 
-## Spark
+## Spark Streaming
 
+Spark 是一种快速、通用、可扩展的大数据分析引擎，已经发展成为一个包含多个子项目的集合。 Spark Streaming 是 Spark 的流处理部分。
 
-Spark 是一种快速、通用、可扩展的大数据分析引擎，已经发展成为一个包含多个子项目的集合，其中包含SparkSQL、Spark Streaming、GraphX、MLib、SparkR等子项目，Spark是基于内存计算的大数据并行计算框架。以下主要涉及 Spark Streaming 流处理部分。
-
-Spark 的流处理是基于所谓微批处理的思想，把流处理看作是批处理的一种特殊形式,每次接收到一个时间间隔的数据才会去处理,所以天生很难在实时性上有所提升。
+Spark 的流处理是基于所谓微批处理的思想，把流处理看作是批处理的一种特殊形式，每次接收到一个时间间隔的数据才会去处理，所以天生很难在实时性上有所提升。
 
 虽然在 Spark2.3 中提出了连续处理模型( Continuous Processing Model),但是现在只支持很有限的功能,并不能在大的项目中使用。 Spark还需要做出很大的努力才能改进现有的流处理模型想要在流处理的实时性上提升,就不能継续用微批处理的模式,而要想办法实现真正的流处理即每当有一条数据输入就立刻处理,不做等待。
 
 ### 数据类型
 
 在内部，每个数据块就是一个 RDD，所以 spark streaming 有 RDD 所有优点，处理速度快，容错性好，支持高度并行计算。
+
+
+### 操作流程
+
+第一，我们将Spark Streaming类名和StreamingContext的一些隐式转换导入到我们的环境中，以便将有用的方法添加到我们需要的其他类（如DStream）中。StreamingContext是所有流功能的主要入口点。我们创建一个带有两个执行线程的本地StreamingContext，批处理间隔为1秒。
+
+```java
+public static void main(String[] args) throws InterruptedException {
+    // 工作环境
+    SparkConf conf = new SparkConf().setMaster("local[2]").setAppName("NetworkWordCount");     // 定义双线程 / APP 名称
+    JavaStreamingContext jssc = new JavaStreamingContext(conf, Durations.seconds(1));          // 定义批处理时间间隔 1s
+    // 流创建（从源导入）
+    JavaReceiverInputDStream<String> lines = jssc.socketTextStream("localhost", 9999);
+    // 流处理（数据分离、统计并打印）
+    JavaDStream<String> words = lines.flatMap(x -> Arrays.asList(x.split(" ")).iterator());    
+    JavaPairDStream<String, Integer> pairs = words.mapToPair(s -> new Tuple2<>(s, 1));
+    JavaPairDStream<String, Integer> wordCounts = pairs.reduceByKey((i1, i2) -> i1 + i2);
+    wordCounts.print();
+    // 启动流运算
+    jssc.start();
+    jssc.awaitTermination();
+}
+```
+
 
 #### DStream 对象
 
@@ -28,33 +51,6 @@ Spark Streaming 提供一个对于流数据的抽象 DStream。DStream 可以由
 
 任何 Spark Streaming 的程序都要首先创建一个 StreamingContext 的对象，它是所有 Streaming 操作的入口。StreamingContext 中最重要的参数是批处理的时间间隔，即把流数据细分成数据块的粒度。
 
-
-### 操作流程
-
-第一，我们将Spark Streaming类名和StreamingContext的一些隐式转换导入到我们的环境中，以便将有用的方法添加到我们需要的其他类（如DStream）中。StreamingContext是所有流功能的主要入口点。我们创建一个带有两个执行线程的本地StreamingContext，批处理间隔为1秒。
-
-```java
-// 统计单词出现次数
-
-public static void main(String[] args) throws InterruptedException {
-    // 创造本地 StreamingContext ：两工作线程 and batch interval of 1 second
-    SparkConf conf = new SparkConf().setMaster("local[2]").setAppName("NetworkWordCount");
-    JavaStreamingContext jssc = new JavaStreamingContext(conf, Durations.seconds(1));  // 设计时间间隔
-    // 创建 DStream 连接到 localhost:9999
-    JavaReceiverInputDStream<String> lines = jssc.socketTextStream("localhost", 9999);
- 
-    // 数据分离、统计并打印
-    JavaDStream<String> words = lines.flatMap(x -> Arrays.asList(x.split(" ")).iterator());    
-    JavaPairDStream<String, Integer> pairs = words.mapToPair(s -> new Tuple2<>(s, 1));
-    JavaPairDStream<String, Integer> wordCounts = pairs.reduceByKey((i1, i2) -> i1 + i2);
-    wordCounts.print();
-
-    // 启动流运算
-    jssc.start();
-    // 等待流运算结束
-    jssc.awaitTermination();
-}
-```
 
 用 `streamingContext.start()` 来开始接收数据并处理它
 用 `streamingContext.awaitTermination()` 等待处理停止（手动停止或由于任何错误）
@@ -118,7 +114,7 @@ input.foreachRDD(rdd =>
 
 ## Flink 
 
-目前唯一同时支持高吞吐、低延迟、高性能的分布式流式数据处理框架。像Apache Spark也只能兼顾高吞吐和高性能特性，主要因为在Spark Streaming流式计算中无法做到低延迟保障
+目前唯一同时支持高吞吐、低延迟、高性能的分布式流式数据处理框架。像Apache Spark也只能兼顾高吞吐和高性能特性，主要因为在Spark Streaming流式计算中无法做到低延迟保障。
 
 **优势**
 
