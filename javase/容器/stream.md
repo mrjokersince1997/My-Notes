@@ -26,7 +26,7 @@ widgets.stream()                                            // 声明作为流�
 
 ---
 
-## 流方法
+## 流操作
 
 ### 生成流 stream
 
@@ -41,15 +41,18 @@ List<String> strings = Arrays.asList("abc", "", "bc", "efg", "abcd","", "jkl");
 int count = strings.parallelStream().filter(string -> string.isEmpty()).count();
 ```
 
-### 迭代 forEach
 
-Stream 提供了新的方法 `forEach` 来迭代流中的每个数据，即对每个数据进行处理。
+Stream操作分类
+中间操作(Intermediate operations)	无状态(Stateless)	unordered() filter() map() mapToInt() mapToLong() mapToDouble() flatMap() flatMapToInt() flatMapToLong() flatMapToDouble() peek()
+有状态(Stateful)	distinct() sorted() sorted() limit() skip()
+结束操作(Terminal operations)	非短路操作	forEach() forEachOrdered() toArray() reduce() collect() max() min() count()
+短路操作(short-circuiting)	anyMatch() allMatch() noneMatch() findFirst() findAny()
 
-```java
-// 输出 10 个随机数 
-Random random = new Random();
-random.ints().limit(10).forEach(System.out::println);
-```
+Stream上的所有操作分为两类：中间操作和结束操作，中间操作只是一种标记，只有结束操作才会触发实际计算。中间操作又可以分为无状态的(Stateless)和有状态的(Stateful)，无状态中间操作是指元素的处理不受前面元素的影响，而有状态的中间操作必须等到所有元素处理之后才知道最终结果，比如排序是有状态操作，在读取所有元素之前并不能确定排序结果；结束操作又可以分为短路操作和非短路操作，短路操作是指不用处理全部元素就可以返回结果，比如找到第一个满足条件的元素。之所以要进行如此精细的划分，是因为底层对每一种情况的处理方式不同。
+
+实际上Stream API内部实现的的本质，就是如何重载Sink的这四个接口方法。（底层都是 sink 方法）
+
+
 
 ### 映射 map
 
@@ -91,9 +94,19 @@ random.ints().limit(10).sorted().forEach(System.out::println);
 ```
 
 
+### 迭代 forEach
+
+结束操作： `forEach` 迭代流中的每个数据，即对每个数据进行最后的处理（比如保存到数据库中或打印）。
+
+```java
+// 输出 10 个随机数 
+Random random = new Random();
+random.ints().limit(10).forEach(System.out::println);
+```
+
 ### 聚合 Collectors
 
-`Collectors` 类实现了归约操作，例如将流转换成集合和聚合元素，可用于返回列表或字符串：
+结束操作：`Collectors` 类实现了归约操作，例如将流转换成集合和聚合元素，可用于返回列表或字符串。
 
 ```java
 // Stream 转化为 List
@@ -113,7 +126,7 @@ System.out.println("合并字符串: " + mergedString);
 
 ### 统计 SummaryStatistics 
 
-一些产生统计结果的收集器也非常有用，它们主要用于 int、double、long 等基本类型上。
+结束操作：收集最终产生的统计结果，它们主要用于 int、double、long 等基本类型上。
 
 ```java
 List<Integer> numbers = Arrays.asList(3, 2, 2, 3, 7, 3, 5);

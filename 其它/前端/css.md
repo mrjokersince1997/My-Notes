@@ -59,6 +59,8 @@ div { letter-spacing:0.5em; }               /* 简单选择器 */
 - `position:absolute;` 设置元素为绝对定位
 - `position:fixed;` 设置元素为固定定位
 
+> 子元素设置为 absolute 定位后，一般要把对应的父元素定位切换到 relative .
+
 
 ---
 
@@ -72,15 +74,33 @@ div { letter-spacing:0.5em; }               /* 简单选择器 */
 2. 上下两元素外边距取最大值：外边距重叠。
 3. 可以取负值：相邻两元素重叠。
 
-- `margin-top:30px;`
 
-- `border:`
+```css
+.block {
+  margin: 0 30px;
+  border: 2px solid #88b7e0;
+  padding: 0 5px 0 10px;
+
+  width: 100%;
+  height: 180px;
+}
+```
+
+当元素大小随父元素浮动时，可以为元素最大或最小尺寸。 
+
+```css
+.block {
+  min-height: 70px;
+  max-height: 280px;
+}
+
+```
 
 ---
 
 ## 元素放置
 
-### 元素类型
+### 类型
 
 1. **块级元素**
    
@@ -107,7 +127,7 @@ div { letter-spacing:0.5em; }               /* 简单选择器 */
 - `display:none` 不摆放该元素
 
 
-### 元素居中
+### 居中
 
 在父级父容器中让行内元素居中对齐：
 
@@ -132,7 +152,7 @@ div { letter-spacing:0.5em; }               /* 简单选择器 */
 }
 ```
 
-对于未知高度的块状元素，通过
+对于未知高度的块状元素，通过（该方法也适用于水平居中）
 
 ```css
 .parent { position: relative; } 
@@ -142,47 +162,56 @@ div { letter-spacing:0.5em; }               /* 简单选择器 */
   top: 50%; 
   transform: translateY(-50%); 
 }
-```
 
-
-对于内联元素，只需为它们添加等值的 padding-top 和 padding-bottom 就可以实现垂直居中。
-
-
-
-特殊技巧：放在页面中央。
-
-```css
-.element {
+.child2 {
+  position: absolute; 
   left:50%;
   top:50%;
   transform: translate(-50%,-50%);
 }
 ```
 
+对于内联元素，只需为它们添加等值的 `padding-top` 和 `padding-bottom` 就可以实现垂直居中。
 
-### 元素隐藏
 
-*隐藏元素共有三种方式，效果不同：*
+
+### 可见
+
+隐藏元素共有三种方式，效果不同：
 
 - `display:none` 元素不摆放，等同于没有
 - `visibility:hidden` 元素隐藏，不可用但仍占用布局空间
 - `opacity:0` 元素透明，可用但不可见（不透明度0-1）
 
+当多个元素堆叠在同一个位置时，可以指定摆放层次：
+
+- `z-index: 5` 元素摆放在第 5 层，同位置元素数值较大者用户可见
+
+
 ---
 
 ## 文本样式
 
+### 基本
 
-### 文本间距
+```css
+h2 {
+  color: white;                  /* 字体颜色 */
+  font-size: 15px;               /* 字体大小 */
+  font-family: sans-serif;       /* 字体样式 */
+}
+```
 
-`letter-spacing:0.5em;` 字符间距
-`word-spacing:0.5em;` 单词间距（只对英文起作用）
+### 间距
+
+- `letter-spacing:0.5em;` 字符间距
+- `word-spacing:0.5em;` 单词间距（只对英文起作用）
 
 
-### 文本溢出
+### 溢出
 
-`overflow-x:hidden;`  水平方向：文本超出内容框后隐藏
-`overflow-y:auto;`  垂直方向：视情况提供滚动条
+- `overflow-x:hidden;`  水平方向：文本超出内容框后隐藏
+- `overflow-y:auto;`  垂直方向：视情况提供滚动条
 
 参数|含义
 -|-
@@ -196,38 +225,70 @@ no-content| 如果内容不适合内容框，则隐藏整个内容。
 
 ---
 
+## 图片样式
+
+### 背景
+
+`background: url("../assets/x.jpg") no-repeat left;` 背景图
+
+---
+
 ## 表格样式
 
-#### 边框
 
-**table有外边距，但有无内边距视情况而定：**
+### 边框
 
-`border-collapse:separate;`
+**`table` 有外边距(margin)，但有无内边(padding)距视情况而定：**
 
-【默认情况】表格内单元格(td)分散，表格内边距(padding)有效。
+1. 【默认情况】单元格(td)分散
 
-`border-collapse:collapse;`
+```css
+table {
+  border-collapse: separate;       /* 单元格分散，内边距有效 */
+  border-space: 0;                 /* 单元格间距，设为 0 起到紧贴效果 */ 
+  padding: 1px;                    /* 单元格和表格外框间距 */
+}
+```
 
-【常用情况】表格内单元格(td)紧挨，且单元格和表格边框紧密贴合：表格内边距(padding)无效。
+2. 【常用情况】单元格(td)紧挨
 
-`border-space:0;`
+```css
+table {
+  border-collapse: collapse;       /* 单元格紧贴，内边距无效 */
+}
+```
 
-单元格分散情况下调整单元格间距。设为0时可达到单元格紧挨效果。
+> `tr` 和 `td/th` 作为内部元素无外边距(margin)。
 
-【不绘制单元格框线，且需要设置表格内边距时可使用。】
 
-**tr和td/th作为内部元素无外边框。**
+### 筛选
 
-#### 局部元素
+1. `tr`：对指定行采用不同样式
 
-tr：对 table 的指定行采用不同样式
+```css
+/* 奇数行元素 */
+table tr:nth-child(odd){           
+  background: #eeeff2; 
+}  
+/* 偶数行元素 */
+table tr:nth-child(even){ 
+  background: #dfe1e7; 
+}  
+```
 
-`table tr:nth-child(odd){ background: #eeeff2; }`  //奇数行元素
-`table tr:nth-child(even){ background: #dfe1e7; }`  //偶数行元素
+2. `td`：对指定列采取不同样式
 
-td：对 table 的指定列采取不同样式
+```css
+/* 第3列以前的全部元素 */
+tr td:nth-child(-n+3){ 
+  text-align:center; 
+}  
+/* 第4列以后的全部元素 */
+tr td:nth-child(n+4){ 
+  text-align:center; 
+}   
+```
 
-`tr td:nth-child(-n+3){ text-align:center; }`    //第3列以前的全部元素
-`tr td:nth-child(n+4){ text-align:center; }`    //第4列以后的全部元素
+
 
 

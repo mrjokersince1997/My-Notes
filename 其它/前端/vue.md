@@ -735,9 +735,11 @@ axios.post('/post',{
 - `ret.status` : 响应状态码
 - `ret.statusText` : 响应状态信息
 
-#### 异步请求
+#### 同步请求
 
-使用 async/await 可以将 axios 同步请求异步化，async 函数会等待 await 返回数据后再向下执行。
+不管是 fetch 和 axios 都是异步发送请求，这是前端界面通用做法。
+
+使用 async/await 可以将 axios 异步请求同步化，async 函数会等待 await 返回数据后再向下执行。
 
 通常放在 try 语句中，如果超时未获得数据则直接进入异常处理。
 
