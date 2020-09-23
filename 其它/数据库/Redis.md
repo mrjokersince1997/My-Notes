@@ -689,7 +689,6 @@ cluster-config-file nodes-6379.conf            # 集群配置文件（默认为 
 
 
 
-
 ### 潜在问题
 
 Redis 缓存技术常用于高并发情况下，有效减轻服务器和数据库负载。如果 Redis 出现问题导致无法均衡负载，就可能导致服务崩溃。
@@ -731,20 +730,82 @@ Redis 缓存技术常用于高并发情况下，有效减轻服务器和数据�
 
 ---
 
-## Jedis
+## Redis 客户端
 
-Jedis 是 shell 程序连接 Redis 数据库最常使用的工具。
+我们在实际使用 Redis 时往往要通过 Redis 客户端，以便在程序中直接操作 Redis 。常使用的 Redis 客户端有 Jedis、 以及功能更为高级的 Redisson、Lettuce 等。
 
-**引入 Jedis 依赖**
+### RedisTemplate 类
+
+Spring Boot 提供了 RedisTemplate 工具类直接对 Redis 进行操作，也提供了 StringRedisTemplate 类继承 RedisTemplate 类，两者方法完全一致。
+
+- `RedisTemplate` 类：存储数据时序列化成字节数组保存，在 Redis 中数据为字节码。读取数据时自动转化为对象。
+- `StringRedisTemplate` 类：存储数据直接以字符串形式保存，在 Redis 中数据直接可读。只适用于字符串类型的数据。
+
+由于两种序列化方法不同导致的数据存储形式差异，两个类之间不能对另一方存储的 Redis 数据进行操作。
+
+**常用方法**
+
+```java
+/* 直接对 key 操作 */
+redisTemplate.delete("key");                                             // 删除 key
+redisTemplate.delete(collection);                                        // 批量删除 key
+redisTemplate.expire("key",10,TimeUnit.MINUTES);                         // 设置 key 失效时间
+Long expire = redisTemplate.getExpire("key");                            // 获取 key 失效时间
+boolean flag = redisTemplate.hasKey("key");                              // 判断 key 是否存在
+
+/* 操作字符串 */
+redisTemplate.opsForValue().set("key", "value");                         // 设置键值对 
+String str = (String)redisTemplate.opsForValue().get("key");             // 获取键值
+
+/* 操作 hash */
+redisTemplate.opsForHash().put("HashKey", "SmallKey", "HashValue");                  // 设置键值对
+redisTemplate.boundHashOps("HashKey").putAll(hashMap);                               // 批量设置键值对
+String value = (String) redisTemplate.opsForHash().get("HashKey", "SmallKey");       // 获取键值
+Map entries = redisTemplate.opsForHash().entries("HashKey");                         // 获取全部键值对
+redisTemplate.boundHashOps("HashKey").delete("SmallKey");                            // 删除键值对
+Boolean isEmpty = redisTemplate.boundHashOps("HashKey").hasKey("SmallKey");          // 是否含有键值对
+
+
+redisTemplate.opsForList();　　 // 操作 list
+redisTemplate.opsForSet();　　  // 操作 set
+redisTemplate.opsForZSet();　 　// 操作有序 set
+```
+
+
+
+
+### Jedis
+
+Jedis 基于 Java 实现，是 shell 程序连接 Redis 数据库最常使用的工具。提供了比较全面的 Redis 命令的支持。
+
+- Jedis 使用阻塞 I/O，且其方法调用都是同步的，程序流需要等到 sockets 处理完 I/O 才能执行。
+- Jedis 采取直连模式，在多个线程间共享一个 Jedis 实例线程不安全，多线程操作 Redis 必须要使用多个 Jedis 实例。
+
+1. **导入依赖**
+
+Spring Boot 2.x 版本 Redis 默认导入了 lettuce，需要排除才能使用 Redis .
 
 ```xml
+<!-- Redis -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-redis</artifactId>
+    <exclusions>
+        <exclusion>
+            <groupId>io.lettuce</groupId>
+            <artifactId>lettuce-core</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+<!-- Jedis -->
 <dependency>
     <groupId>redis.clients</groupId>
     <artifactId>jedis</artifactId>
 </dependency>
 ```
 
-### Jedis 类
+
+2. **基本使用**
 
 使用引入的 Jedis 类即可连接 Redis 数据库并进行操作。操作名取自 Redis 指令，如果出现问题则会抛出 JedisDataException。
 
@@ -770,11 +831,7 @@ public class JedisTest{
 }
 ```
 
-### JedisPool 类
-
-在实际开发中，创建多个 Redis 连接会非常复杂且难以管理，我们往往通过 Redis 连接池来管理 Redis 连接。
-
-Jedis 同样提供了 JedisPool 类作为 Redis 连接池。在创建 JedisPool 对象时我们还需要通过 JedisPoolConfig 类来对连接池进行配置。
+在实际开发中，创建多个 Redis 连接会非常复杂且难以管理，Jedis 提供了 JedisPool 类作为 Redis 连接池来管理 Redis 连接。
 
 ```java
 import redis.clients.jedis.JedisPool;
@@ -796,27 +853,12 @@ public class JedisTest{
         //jedis.auth("password");                                 
     }
 }
-
-
-
 ```
 
+3. **Spring Boot 集成**
 
-### Spring Boot 中使用
+Spring Boot 中，我们无需自行创建 Redis 连接，只需要在配置文件中配置好参数。
 
-（1）在Maven 添加Redis依赖：
-```xml
-<!-- Radis -->
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-data-redis</artifactId>
-</dependency>
-```
-
-
-（2）添加配置文件：
-
-在SpringBoot中使用.properties或者.yml
 ```properties
 # REDIS配置
 # Redis数据库索引（默认为0）
@@ -839,9 +881,7 @@ spring.redis.pool.min-idle=0
 spring.redis.timeout=0
 ```
 
-（3）测试访问
-
-实体类要求序列化
+Spring Boot 提供默认的 RedisTemplate 工具类根据配置文件自动连接 Redis，自动加载后可以直接调用其中的方法去操作。
 
 ```java
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -853,21 +893,158 @@ public class ApplicationTests {
 
     @Test
     public void test() throws Exception {
-
         User user = new User();
         user.setName("我没有三颗心脏");
         user.setAge(21);
-
+        // 调用工具类方法
         redisTemplate.opsForValue().set("user_1", user);
         User user1 = (User) redisTemplate.opsForValue().get("user_1");
-
         System.out.println(user1.getName());
     }
 }
 ```
-]
+
+**RedisTemplate 类常用操作**
+
+```java
+redisTemplate.delete(key);                                   // 删除 key
+redisTemplate.delete(keys);                                  // 批量删除 key
+redisTemplate.expire(key,time,TimeUnit.MINUTES);             // 设置 key 失效时间
+Long expire = redisTemplate.getExpire(key);                  // 获取 key 失效时间
+```
+
+### Lettuce
+
+
+更加高级的 Redis 客户端，用于线程安全同步，异步和响应使用，支持集群，Sentinel，管道和编码器。
+
+- 基于 Netty 框架的事件驱动的通信层，其方法调用是异步的。不用浪费线程等待网络或磁盘 I/O。
+- Lettuce 的 API 是线程安全的，所以可以操作单个 Lettuce 连接来完成各种操作。
+
+1. **导入依赖**
+
+在 spring boot 2.x 版本，为 Redis 默认导入了 Lettuce 。
+
+```xml
+<!-- Redis 默认导入 Lettuce -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-redis</artifactId>
+</dependency>
+```
+
+如果 Spring Boot 版本过低，也可以自行导入 Lettuce. Redis 版本至少需要 2.6 .
+
+```xml
+<!-- 单独导入 Lettuce -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-redis</artifactId>
+</dependency>
+<dependency>
+    <groupId>io.lettuce</groupId>
+    <artifactId>lettuce-core</artifactId>
+    <version>5.1.8.RELEASE</version>
+</dependency>
+```
+
+2. **基本使用**
+
+```java
+public class LettuceTest {
+    @Test
+    public void testSetGet() throws Exception {
+        // 注册连接信息
+        RedisURI redisUri = RedisURI.builder()                    
+                .withHost("localhost")
+                .withPort(6379)
+                .withTimeout(Duration.of(10, ChronoUnit.SECONDS))
+                .build();
+        // 创建 Redis 客户端
+        RedisClient redisClient = RedisClient.create(redisUri);   
+        // 创建连接
+        StatefulRedisConnection<String, String> connection = redisClient.connect();     
+        // 创建同步命令
+        RedisCommands<String, String> redisCommands = connection.sync();                
+        SetArgs setArgs = SetArgs.Builder.nx().ex(5);
+        String result = redisCommands.set("name", "throwable", setArgs);
+        Assertions.assertThat(result).isEqualToIgnoringCase("OK");
+        result = redisCommands.get("name");
+        Assertions.assertThat(result).isEqualTo("throwable");
+        /******************** 其他操作 **********************/
+        connection.close();                     // 关闭连接
+        redisClient.shutdown();                 // 关闭客户端
+    }
+}
+```
+
+Lettuce 主要提供三种API：同步（sync）`RedisCommands`、异步（async）`RedisAsyncCommands`、反应式（reactive）`RedisReactiveCommands`。
 
 
 
-通过上面这段极为简单的测试案例演示了如何通过自动配置的StringRedisTemplate对象进行Redis的读写操作，该对象从命名中就可注意到支持的是String类型。原本是RedisTemplate<K, V>接口，StringRedisTemplate就相当于RedisTemplate<String, String>的实现。
+3. **Spring Boot 集成**
 
+同样在配置文件中配置好参数。
+
+```properties
+spring.redis.host=localhost
+spring.redis.port=6379
+spring.redis.password=root
+# 连接池最大连接数(使用负值表示没有限制) 默认为8
+spring.redis.lettuce.pool.max-active=8
+# 连接池最大阻塞等待时间(使用负值表示没有限制) 默认为-1
+spring.redis.lettuce.pool.max-wait=-1ms
+# 连接池中的最大空闲连接 默认为8
+spring.redis.lettuce.pool.max-idle=8
+# 连接池中的最小空闲连接 默认为 0
+spring.redis.lettuce.pool.min-idle=0
+```
+
+我们同样可以使用 Spring Boot 提供默认的 RedisTemplate 工具类根据配置文件自动连接 Redis。但默认情况下的模板只支持 `RedisTemplate<String,String>` 存入字符串，因此我们往往需要自定义 RedisTemplate 设置序列化器，以方便操作实例对象。
+
+```java
+@Configuration
+public class RedisConfig {
+    @Bean
+    public RedisTemplate redisTemplate(RedisConnectionFactory factory) {
+        RedisTemplate<String, Serializable> redisTemplate = new RedisTemplate<>();
+        // key 采用 String 的序列化方式
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        // value 采用 jackson 的序列化方式
+        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        // hash 采用 String/jackson 的序列化方式
+        redisTemplate.setHashKeySerializer(stringRedisSerializer);
+        redisTemplate.setHashValueSerializer(jackson2JsonRedisSerializer);
+        redisTemplate.setConnectionFactory(connectionFactory);
+        return redisTemplate;
+    }
+}
+```
+
+完成后即可用自定义的 RedisTemplate 工具类对 Redis 进行操作。
+
+```java
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class RedisTest {
+
+    @Autowired
+    private RedisTemplate<String, Serializable> redisTemplate;
+
+    @Test
+    public void test() {
+        String key = "user:1";
+        redisTemplate.opsForValue().set(key, new User(1,"pjmike",20));
+        User user = (User) redisTemplate.opsForValue().get(key);
+    }
+}
+```
+
+
+---
+
+## 参考链接
+
+- Lettuce
+        https://www.cnblogs.com/throwable/p/11601538.html
+        https://juejin.im/post/6844903681087930375

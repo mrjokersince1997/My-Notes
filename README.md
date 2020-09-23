@@ -56,6 +56,7 @@
   - [Spring AOP](javaee/spring/SpringAOP.md)
   - [Spring Controller](javaee/spring/SpringController.md)
   - [Spring Session](javaee/spring/SpringSession.md)
+  - [Spring Security](javaee/spring/SpringSecurity.md)
 
 ## 其它
 

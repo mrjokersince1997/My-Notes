@@ -59,6 +59,18 @@ div { letter-spacing:0.5em; }               /* 简单选择器 */
 - `position:absolute;` 设置元素为绝对定位
 - `position:fixed;` 设置元素为固定定位
 
+
+```css
+/* 绝对定位到父元素左上角 */
+.box {
+  position: absolute;
+  left: 10px;             /* 同时设置 left 和 right 会强置元素宽度 */
+  top: 10px;              /* 同时设置 top 和 bottom 会强置元素高度 */
+}
+
+```
+
+
 > 子元素设置为 absolute 定位后，一般要把对应的父元素定位切换到 relative .
 
 
@@ -161,13 +173,8 @@ div { letter-spacing:0.5em; }               /* 简单选择器 */
   position: absolute; 
   top: 50%; 
   transform: translateY(-50%); 
-}
-
-.child2 {
-  position: absolute; 
-  left:50%;
-  top:50%;
-  transform: translate(-50%,-50%);
+  /* left:50%;
+  transform: translate(-50%,-50%); */
 }
 ```
 

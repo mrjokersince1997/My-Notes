@@ -632,9 +632,9 @@ queryData('http://localhost:8080').then(function(data){
 });
 ```
 
-- p.then 获取异步正常执行结果
-- p.catch 获取异常信息
-- p.finally 无论正确与否都会触发
+- `p.then` 获取异步正常执行结果
+- `p.catch` 获取异常信息
+- `p.finally` 无论正确与否都会触发
 
 **请求嵌套**
 
