@@ -214,6 +214,8 @@ h2 {
 - `letter-spacing:0.5em;` 字符间距
 - `word-spacing:0.5em;` 单词间距（只对英文起作用）
 
+- `text-indent: 2em;` 首行缩进，设置为2字符
+
 
 ### 溢出
 
