@@ -105,7 +105,15 @@ div { letter-spacing:0.5em; }               /* 简单选择器 */
   min-height: 70px;
   max-height: 280px;
 }
+```
 
+计算元素尺寸时，可以使用四则运算式。
+
+```css
+.block {
+  min-height: calc(100% - 80px);
+  max-height: 100%;
+}
 ```
 
 ---
